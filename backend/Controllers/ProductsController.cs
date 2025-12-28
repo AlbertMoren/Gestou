@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestaoApi.Controllers;
 
+/// <summary>
+/// Controller responsável pela gestão e consulta do catálogo de produtos.
+/// Oferece suporte a filtros dinâmicos e busca textual.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase{
@@ -15,14 +19,24 @@ public class ProductsController : ControllerBase{
         _context = context;
     }
 
+    /// <summary>
+    /// Lista os produtos cadastrados com suporte a filtros opcionais.
+    /// Atende aos requisitos de listagem, busca por nome e filtro de status (ativos).
+    /// </summary>
+    /// <param name="category">Filtro opcional por categoria exata do produto.</param>
+    /// <param name="onlyActive">Se verdadeiro, retorna apenas produtos marcados como ativos.</param>
+    /// <param name="search">Termo de busca para filtrar produtos pelo nome (case-insensitive).</param>
+    /// <returns>Uma lista de produtos que atendem aos critérios informados.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] string? category,[FromQuery] bool? onlyActive,[FromQuery] string? search){
         var query = _context.Products.AsQueryable();
 
+        // Aplica filtro por categoria
         if (!string.IsNullOrEmpty(category)){
             query = query.Where(p => p.Category == category);
         }
 
+        /// Filtra apenas produtos ativos
         if(onlyActive.HasValue && onlyActive.Value){
             query = query.Where(p => p.Active);
         }
