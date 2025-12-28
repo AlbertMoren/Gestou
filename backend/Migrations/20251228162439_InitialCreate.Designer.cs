@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GestaoApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251228135115_InitialCreate")]
+    [Migration("20251228162439_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -34,7 +34,7 @@ namespace GestaoApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -46,7 +46,7 @@ namespace GestaoApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("GestaoApi.Models.Order", b =>
@@ -58,7 +58,7 @@ namespace GestaoApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
@@ -69,7 +69,7 @@ namespace GestaoApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("GestaoApi.Models.OrderItem", b =>
@@ -96,7 +96,7 @@ namespace GestaoApi.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems", t =>
+                    b.ToTable("OrderItems", null, t =>
                         {
                             t.HasCheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0");
                         });
@@ -121,11 +121,11 @@ namespace GestaoApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("PaidAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Payments", t =>
+                    b.ToTable("Payments", null, t =>
                         {
                             t.HasCheckConstraint("CK_Payment_Amount", "\"AmountCents\" >= 0");
                         });
@@ -155,7 +155,7 @@ namespace GestaoApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", t =>
+                    b.ToTable("Products", null, t =>
                         {
                             t.HasCheckConstraint("CK_Product_Price", "\"PriceCents\" >= 0");
                         });
