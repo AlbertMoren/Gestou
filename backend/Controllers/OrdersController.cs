@@ -19,6 +19,39 @@ public class OrdersController : ControllerBase{
     }
 
     /// <summary>
+    /// Recupera os detalhes de um pedido específico, incluindo seus itens.
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Order>> GetOrder(int id)
+    {   
+        //carregar os itens relacionados
+        var order = await _context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null) {
+            return NotFound("Pedido não encontrado");
+        }
+        return order;
+    }
+
+    /// <summary>
+    /// Lista todos os pedidos de forma resumida para otimização de performance no frontend.
+    /// Calcula o valor total de cada pedido dinamicamente.
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Object>>> GetOrders()
+    {
+        return await _context.Orders.Include(o => o.Items).Select(o => new
+        {
+            o.Id,
+            o.CustomerId,
+            o.Status,
+            o.CreatedAt,
+            //valor total (Quantidade * Preço Unitário)
+            total = o.Items.Sum(i => i.Quantity * i.UnitPriceCents)
+        }).OrderByDescending(o => o.CreatedAt).ToListAsync();
+    }
+
+    /// <summary>
     /// Cria um novo pedido após validar a existência do cliente e o status dos produtos.
     /// Atende ao requisito de impedir a venda de produtos inativos.
     /// </summary>
@@ -54,39 +87,6 @@ public class OrdersController : ControllerBase{
 
         // Retorna o status 201 Created e o local para consulta do novo pedido
         return CreatedAtAction(nameof(GetOrder), new { id = newOrder.Id }, newOrder);
-    }
-
-    /// <summary>
-    /// Recupera os detalhes de um pedido específico, incluindo seus itens.
-    /// </summary>
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Order>> GetOrder(int id)
-    {   
-        //carregar os itens relacionados
-        var order = await _context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
-
-        if (order == null) {
-            return NotFound("Pedido não encontrado");
-        }
-        return order;
-    }
-
-    /// <summary>
-    /// Lista todos os pedidos de forma resumida para otimização de performance no frontend.
-    /// Calcula o valor total de cada pedido dinamicamente.
-    /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Object>>> GetOrders()
-    {
-        return await _context.Orders.Include(o => o.Items).Select(o => new
-        {
-            o.Id,
-            o.CustomerId,
-            o.Status,
-            o.CreatedAt,
-            //valor total (Quantidade * Preço Unitário)
-            total = o.Items.Sum(i => i.Quantity * i.UnitPriceCents)
-        }).OrderByDescending(o => o.CreatedAt).ToListAsync();
     }
 }
 

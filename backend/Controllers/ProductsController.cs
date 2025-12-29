@@ -48,4 +48,46 @@ public class ProductsController : ControllerBase{
         return await query.ToArrayAsync();
     }
     
+    /// <summary>
+    /// Cadastra um novo produto.
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<Product>> PostProduct(Product product){
+        if(product.PriceCents < 0){
+            return BadRequest("o preço do produto não pode ser negativo");
+        }
+
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetProducts), new { id = product.Id}, product);
+    }
+
+    /// <summary>
+    /// Atualiza os dados de um produto existente.
+    /// Permite alterar preço, categoria e status de ativação.
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<ActionResult> PutProduct(int id, Product product)
+    {
+        if(id != product.Id){
+            return BadRequest("O id está inconsistente");
+        }
+
+        if(product.PriceCents < 0){
+            return BadRequest("O preço do produto não pode ser negativo");
+        }
+
+        _context.Entry(product).State = EntityState.Modified;
+
+        try{
+            await _context.SaveChangesAsync();
+        }catch (DbUpdateConcurrencyException){
+            if(!_context.Products.Any(p => p.Id == id)) {
+                return NotFound("Produto não encontrado");
+            }
+            throw;
+        }
+        return NoContent();
+    }
 }
