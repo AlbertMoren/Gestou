@@ -228,12 +228,12 @@
                                     <tr v-for="ped in pedidos" :key="ped.id">
                                         <td>#{{ ped.id }}</td>
                                         <td>{{ new Date(ped.createdAt).toLocaleString() }}</td>
-                                        <td>R$ {{ (ped.totalPriceCents / 100).toFixed(2) }}</td>
+                                        <td>R$ {{ (ped.total / 100).toFixed(2) }}</td>
                                         <td>
                                             <span :class="['badge', ped.status === 'PAID' ? 'bg-success' : 'bg-warning text-dark']">{{ped.status}}</span>
                                         </td>
                                         <td class="text-center">
-                                            <button v-if="ped.status === 'NEW'" class="btn btn-sm btn-outline-success" @click="registrarPagamento(ped.id)">💰 Confirmar Pagamento
+                                            <button v-if="ped.status === 'NEW'" class="btn btn-sm btn-outline-success" @click="registrarPagamento(ped)">💰 Confirmar Pagamento
                                             </button>
                                             <span v-else class="text-muted small">Pago ✔️</span>
                                         </td>

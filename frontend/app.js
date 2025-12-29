@@ -108,7 +108,12 @@ createApp({
         },
         async irParaHistorico(){
             this.abaAtiva = 'historico';
-            await this.buscarPedidos();
+            try {
+                const res = await fetch(`${this.apiUrl}/orders`);
+                this.pedidos = await res.json();
+            } catch (e) {
+                console.error("erro ao carregar os pedidos". e);
+            }
         },
         async buscarPedidos(){
             try{
@@ -118,20 +123,26 @@ createApp({
                 console.error("erro ao buscar pedidos",e);
             }
         },
-        async registrarPagamentos(orderId){
-            if(!confirm("Confirma o recbimento do pagamento para esse pedido?")){
+        async registrarPagamento(pedido){
+            if(!confirm(`Confirmar o pagamento de R$ ${(pedido.total / 100).toFixed(2)}?`)){
                 return; 
             }
             try {
-                const payload = {orderId: orderId};
-                const res = await fetch(`${this.apiUrl/payments}`,{
+                const payload = {
+                    orderId: pedido.id,
+                    method: "CARD",
+                    amountCents: pedido.total
+                };
+
+                const res = await fetch(`${this.apiUrl}/payments`, { 
                     method: 'POST',
-                    headers: {'Content-Type':'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 if(res.ok){
-                    alert("Pagamento registrado com sucesso!");
+                    const data = await res.json();
+                    alert(`Pagamento registrado! Status: ${data.statusAtual}`);
                     await this.buscarPedidos();
                 }else{
                     alert("Erro ao registrar pagamentos");
