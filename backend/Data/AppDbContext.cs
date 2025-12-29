@@ -13,8 +13,12 @@ public class AppDbContext : DbContext
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder){
+        modelBuilder.Entity<Customer>().ToTable("Customers");
+        modelBuilder.Entity<Product>().ToTable("Products");
+        modelBuilder.Entity<Order>().ToTable("Orders");
+        modelBuilder.Entity<OrderItem>().ToTable("OrderItems");
+        modelBuilder.Entity<Payment>().ToTable("Payments");
         modelBuilder.Entity<Product>(entity => {
             entity.ToTable(t => t.HasCheckConstraint("CK_Product_Price", "\"PriceCents\" >= 0"));
         });
