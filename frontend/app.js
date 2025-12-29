@@ -1,6 +1,14 @@
 const { createApp } = Vue;
 
 createApp({
+    components:{
+        'comp-pedido': CompPedido,
+        'comp-cadastro-produto': CompCadastroProduto,
+        'comp-cadastro-cliente': CompCadastroCliente,
+        'comp-gerenciar-produtos': CompGerenciarProdutos,
+        'comp-editar-produto': CompEditarProduto,
+        'comp-historico': CompHistorico
+    },
     data() {
         return {
             apiUrl: "http://localhost:5037/api",
